@@ -1,13 +1,24 @@
 import Joi from "joi";
 
-export const createContactSchema = Joi.object({
+export const contactCreateSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().required(),
     phone: Joi.string().required(),
 });
 
-export const updateContactSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required(),
-    phone: Joi.string().required(),
+export const contactFavoriteSchema = Joi.object({
+    favorite: Joi.boolean().required(),
 });
+
+export const contactUpdateSchema = Joi.object({
+    name: Joi.string(),
+    email: Joi.string(),
+    phone: Joi.string(),
+    favorite: Joi.boolean(),
+});
+
+export default {
+    contactUpdateSchema,
+    contactFavoriteSchema,
+    contactCreateSchema,
+};
