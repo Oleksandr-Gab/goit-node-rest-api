@@ -10,21 +10,27 @@ import {
 
 async function getAllContacts(req, res, next) {
     try {
-        const result = await Contact.find();
+        const result = await Contact.find({ owner: req.user.id });
 
-        res.send(result);
+        return res.send(result);
     } catch (error) {
         next(error);
     }
 }
 
 async function getOneContact(req, res, next) {
-    const { id } = req.params;
+    const { id: _id } = req.params;
     try {
-        const result = await Contact.findById(id);
+        // ------------------------------------------------
+        const result = await Contact.findOne({ _id, owner: req.user.id });
         if (result === null) {
             throw HttpError(404);
         }
+
+        if (result.owner.toString() !== req.user.id) {
+            throw HttpError(404);
+        }
+
         res.send(result);
     } catch (error) {
         next(error);
@@ -32,13 +38,18 @@ async function getOneContact(req, res, next) {
 }
 
 async function deleteContact(req, res, next) {
-    const { id } = req.params;
+    const { id: _id } = req.params;
 
     try {
-        const result = await Contact.findByIdAndDelete(id);
+        // ----------------------------------------------------
+        const result = await Contact.findOneAndDelete({
+            _id,
+            owner: req.user.id,
+        });
         if (result === null) {
             throw HttpError(404);
         }
+
         res.send(result);
     } catch (error) {
         next(error);
@@ -50,12 +61,14 @@ async function createContact(req, res, next) {
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
+        owner: req.user.id,
     };
 
-    const { error, value } = contactCreateSchema.validate(contact);
+    const { error } = contactCreateSchema.validate(contact);
     if (typeof error !== "undefined") {
         return res.status(400).send("Bad request");
     }
+
     try {
         const result = await Contact.create(contact);
 
@@ -66,26 +79,32 @@ async function createContact(req, res, next) {
 }
 
 async function updateStatusContact(req, res, next) {
-    const { id } = req.params;
+    const { id: _id } = req.params;
 
     const contact = {
         favorite: req.body.favorite,
     };
 
-    const { error, value } = contactFavoriteSchema.validate(contact);
+    const { error } = contactFavoriteSchema.validate(contact);
 
     if (typeof error !== "undefined") {
         return res.status(400).send("Bad request");
     }
 
     try {
-        const result = await Contact.findByIdAndUpdate(id, contact, {
-            new: true,
-        });
+        // ---------------------------------------------------------
+        const result = await Contact.findOneAndUpdate(
+            { _id, owner: req.user.id },
+            contact,
+            {
+                new: true,
+            }
+        );
 
         if (result === null) {
             throw HttpError(404);
         }
+
         res.status(200).send(result);
     } catch (error) {
         next(error);
@@ -93,7 +112,7 @@ async function updateStatusContact(req, res, next) {
 }
 
 async function updateContact(req, res, next) {
-    const { id } = req.params;
+    const { id: _id } = req.params;
 
     const contact = {
         name: req.body.name,
@@ -102,15 +121,20 @@ async function updateContact(req, res, next) {
         favorite: req.body.favorite,
     };
 
-    const { error, value } = contactUpdateSchema.validate(contact);
+    const { error } = contactUpdateSchema.validate(contact);
     if (typeof error !== "undefined") {
         return res.status(400).send("Badd request");
     }
 
     try {
-        const result = await Contact.findByIdAndUpdate(id, contact, {
-            new: true,
-        });
+        // ----------------------------------------------------------
+        const result = await Contact.findOneAndUpdate(
+            { _id, owner: req.user.id },
+            contact,
+            {
+                new: true,
+            }
+        );
 
         if (result === null) {
             throw HttpError(404);
