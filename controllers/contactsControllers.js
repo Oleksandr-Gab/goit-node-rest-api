@@ -8,7 +8,7 @@ import {
     contactFavoriteSchema,
 } from "../schemas/contactsSchemas.js";
 
-export async function getAllContacts(req, res, next) {
+async function getAllContacts(req, res, next) {
     try {
         const result = await Contact.find();
 
@@ -18,7 +18,7 @@ export async function getAllContacts(req, res, next) {
     }
 }
 
-export async function getOneContact(req, res, next) {
+async function getOneContact(req, res, next) {
     const { id } = req.params;
     try {
         const result = await Contact.findById(id);
@@ -31,7 +31,7 @@ export async function getOneContact(req, res, next) {
     }
 }
 
-export async function deleteContact(req, res, next) {
+async function deleteContact(req, res, next) {
     const { id } = req.params;
 
     try {
@@ -45,7 +45,7 @@ export async function deleteContact(req, res, next) {
     }
 }
 
-export async function createContact(req, res, next) {
+async function createContact(req, res, next) {
     const contact = {
         name: req.body.name,
         email: req.body.email,
@@ -65,7 +65,7 @@ export async function createContact(req, res, next) {
     }
 }
 
-export async function updateStatusContact(req, res, next) {
+async function updateStatusContact(req, res, next) {
     const { id } = req.params;
 
     const contact = {
@@ -92,7 +92,7 @@ export async function updateStatusContact(req, res, next) {
     }
 }
 
-export async function updateContact(req, res, next) {
+async function updateContact(req, res, next) {
     const { id } = req.params;
 
     const contact = {

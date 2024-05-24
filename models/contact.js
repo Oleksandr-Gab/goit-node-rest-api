@@ -10,7 +10,8 @@ const contactSchema = new mongoose.Schema(
             type: String,
         },
         phone: {
-            type: String,
+            type: Number,
+            required: true,
         },
         favorite: {
             type: Boolean,
