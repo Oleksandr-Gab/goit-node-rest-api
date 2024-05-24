@@ -10,7 +10,7 @@ contactsRouter.get("/:id", ContactsControllers.getOneContact);
 
 contactsRouter.delete("/:id", ContactsControllers.deleteContact);
 
-contactsRouter.post("/", jsonParcer, ContactsControllers.createContact);
+contactsRouter.post("/", ContactsControllers.createContact);
 
 contactsRouter.patch(
     "/:id/favorite",
