@@ -66,7 +66,7 @@ async function createContact(req, res, next) {
 
     const { error } = contactCreateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Bad request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
@@ -88,7 +88,7 @@ async function updateStatusContact(req, res, next) {
     const { error } = contactFavoriteSchema.validate(contact);
 
     if (typeof error !== "undefined") {
-        return res.status(400).send("Bad request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
@@ -123,7 +123,7 @@ async function updateContact(req, res, next) {
 
     const { error } = contactUpdateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Badd request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {

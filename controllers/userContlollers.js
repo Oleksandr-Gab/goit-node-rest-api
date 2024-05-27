@@ -13,7 +13,7 @@ async function registerUser(req, res, next) {
 
     const { error } = userRegisterSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Badd request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
@@ -44,7 +44,7 @@ async function loginUser(req, res, next) {
 
     const { error } = userLoginSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Badd request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
@@ -53,7 +53,7 @@ async function loginUser(req, res, next) {
         if (user === null) {
             return res
                 .status(401)
-                .send({ message: "Email or password is wrong" });
+                .send(`message: ${error.message}`);
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -61,7 +61,7 @@ async function loginUser(req, res, next) {
         if (isMatch === false) {
             return res
                 .status(401)
-                .send({ message: "Email or password is wrong" });
+                .send(`message: ${error.message}`);
         }
 
         const token = jwt.sign(
