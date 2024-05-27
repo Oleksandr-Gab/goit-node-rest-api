@@ -54,7 +54,7 @@ async function createContact(req, res, next) {
 
     const { error, value } = contactCreateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Bad request");
+        return res.status(400).send(`message: ${error.message}`);
     }
     try {
         const result = await Contact.create(contact);
@@ -75,7 +75,7 @@ async function updateStatusContact(req, res, next) {
     const { error, value } = contactFavoriteSchema.validate(contact);
 
     if (typeof error !== "undefined") {
-        return res.status(400).send("Bad request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
@@ -94,7 +94,6 @@ async function updateStatusContact(req, res, next) {
 
 async function updateContact(req, res, next) {
     const { id } = req.params;
-
     const contact = {
         name: req.body.name,
         email: req.body.email,
@@ -104,7 +103,7 @@ async function updateContact(req, res, next) {
 
     const { error, value } = contactUpdateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send("Badd request");
+        return res.status(400).send(`message: ${error.message}`);
     }
 
     try {
