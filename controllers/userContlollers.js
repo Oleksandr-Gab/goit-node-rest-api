@@ -9,11 +9,11 @@ import {
 } from "../schemas/usersSchemas.js";
 
 async function registerUser(req, res, next) {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
     const { error } = userRegisterSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send(`message: ${error.message}`);
+        return res.status(400).send({"message": error.message});
     }
 
     try {
@@ -25,11 +25,10 @@ async function registerUser(req, res, next) {
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const user = await User.create({ name, email, password: passwordHash });
+        const user = await User.create({email, password: passwordHash });
 
         res.status(201).send({
             user: {
-                name: user.name,
                 email: user.email,
                 subscription: user.subscription,
             },
@@ -44,25 +43,21 @@ async function loginUser(req, res, next) {
 
     const { error } = userLoginSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send(`message: ${error.message}`);
+        return res.status(400).send({"message": error.message});
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (user === null) {
-            return res
-                .status(401)
-                .send(`message: ${error.message}`);
-        }
+            return res.status(401).send({ message: "Email or password is wrong" });
+            }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch === false) {
-            return res
-                .status(401)
-                .send(`message: ${error.message}`);
-        }
+            return res.status(401).send({ message: "Email or password is wrong" });
+            }
 
         const token = jwt.sign(
             {
@@ -81,6 +76,7 @@ async function loginUser(req, res, next) {
             user: { email: email, subscription: user.subscription },
         });
     } catch (error) {
+        console.log(error);
         next(error);
     }
 }
