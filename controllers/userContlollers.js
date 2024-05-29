@@ -13,7 +13,7 @@ async function registerUser(req, res, next) {
 
     const { error } = userRegisterSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send({"message": error.message});
+        return res.status(400).send({message: error.message});
     }
 
     try {
@@ -43,7 +43,7 @@ async function loginUser(req, res, next) {
 
     const { error } = userLoginSchema.validate(req.body);
     if (typeof error !== "undefined") {
-        return res.status(400).send({"message": error.message});
+        return res.status(400).send({message: error.message});
     }
 
     try {

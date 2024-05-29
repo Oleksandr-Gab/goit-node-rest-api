@@ -21,7 +21,6 @@ async function getAllContacts(req, res, next) {
 async function getOneContact(req, res, next) {
     const { id: _id } = req.params;
     try {
-        // ------------------------------------------------
         const result = await Contact.findOne({ _id, owner: req.user.id });
         if (result === null) {
             throw HttpError(404);
@@ -41,7 +40,6 @@ async function deleteContact(req, res, next) {
     const { id: _id } = req.params;
 
     try {
-        // ----------------------------------------------------
         const result = await Contact.findOneAndDelete({
             _id,
             owner: req.user.id,
@@ -66,7 +64,7 @@ async function createContact(req, res, next) {
 
     const { error } = contactCreateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send(`message: ${error.message}`);
+        return res.status(400).send({message: error.message});
     }
 
     try {
@@ -88,11 +86,10 @@ async function updateStatusContact(req, res, next) {
     const { error } = contactFavoriteSchema.validate(contact);
 
     if (typeof error !== "undefined") {
-        return res.status(400).send(`message: ${error.message}`);
+        return res.status(400).send({message: error.message});
     }
 
     try {
-        // ---------------------------------------------------------
         const result = await Contact.findOneAndUpdate(
             { _id, owner: req.user.id },
             contact,
@@ -123,11 +120,10 @@ async function updateContact(req, res, next) {
 
     const { error } = contactUpdateSchema.validate(contact);
     if (typeof error !== "undefined") {
-        return res.status(400).send(`message: ${error.message}`);
+        return res.status(400).send({message: error.message});
     }
 
     try {
-        // ----------------------------------------------------------
         const result = await Contact.findOneAndUpdate(
             { _id, owner: req.user.id },
             contact,
