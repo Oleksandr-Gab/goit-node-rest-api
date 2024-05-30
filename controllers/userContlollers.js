@@ -38,7 +38,7 @@ async function registerUser(req, res, next) {
 
     res
       .status(201)
-      .send({ user: { email: user.email, subscription: user.subscription } });
+      .send({ user: { email: user.email, subscription: user.subscription, avatarURL: user.avatarURL } });
   } catch (error) {
     next(error);
   }
@@ -75,7 +75,7 @@ async function loginUser(req, res, next) {
 
     res.status(200).send({
       token: token,
-      user: { email: email, subscription: user.subscription },
+      user: { email: email, subscription: user.subscription, avatarURL: user.avatarURL},
     });
   } catch (error) {
     next(error);
