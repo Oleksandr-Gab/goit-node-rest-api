@@ -4,6 +4,7 @@ export const contactCreateSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().required(),
     phone: Joi.string().required(),
+    owner: Joi.string().required(),
 });
 
 export const contactFavoriteSchema = Joi.object({
