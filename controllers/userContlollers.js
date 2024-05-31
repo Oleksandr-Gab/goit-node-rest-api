@@ -99,18 +99,22 @@ async function currentUser(req, res) {
 
 async function usersAvatar(req, res, next) {
   try {
+    if(!req.file) {
+      return res.status(400).send({message: "We need image to change avatar!"})
+    }
+
     const resize = await Jimp.read(req.file.path);
-    await resize.resize(250, 250);
-    resize.write(req.file.path);
+    resize.resize(250, 250);
+    resize.write(path.resolve(req.file.path));
 
     await fs.rename(
       req.file.path,
-      path.resolve("public/avatars", req.file.filename)
+      path.join("public/avatars", req.file.filename)
     );
 
     const user = await User.findOneAndUpdate(
       req.user._id,
-      { avatarURL: req.file.filename },
+      { avatarURL: `/avatars/ ${req.file.filename}` },
       { new: true }
     );
 
