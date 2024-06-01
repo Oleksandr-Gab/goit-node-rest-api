@@ -9,6 +9,10 @@ const jsonParcer = express.json();
 
 authRouter.post("/register", jsonParcer, UserControllers.registerUser);
 
+authRouter.get("/verify/:verificationToken", UserControllers.verifyEmail);
+
+authRouter.post("/verify", UserControllers.verify);
+
 authRouter.post("/login", jsonParcer, UserControllers.loginUser);
 
 authRouter.post("/logout", auditToken, UserControllers.logout);

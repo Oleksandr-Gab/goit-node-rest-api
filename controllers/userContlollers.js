@@ -5,11 +5,14 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import gravatar from "gravatar";
 import Jimp from "jimp";
+import crypto from "node:crypto"
 
+import mail from "../helpers/sendEmail.js"
 import User from "../models/user.js";
 import {
   userLoginSchema,
   userRegisterSchema,
+  verifySchema,
 } from "../schemas/usersSchemas.js";
 
 async function registerUser(req, res, next) {
@@ -29,16 +32,81 @@ async function registerUser(req, res, next) {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const avatarURL = gravatar.url(email);
+    const verifyToken = crypto.randomUUID();
 
     const user = await User.create({
       email,
       password: passwordHash,
       avatarURL,
+      verificationToken: verifyToken,
+    });
+
+    mail.sendMail({
+      to: email,
+      subject: "Verify email",
+      html: `<p>Hello!</p>
+              <p>This is a test email to verify the email sending functionality.</p>
+              <p>Please click the button below to verify your email address:</p>
+              <p><a href="${BASE_URL}/api/users/verify/${verificationToken}" 
+                  style="display:inline-block; padding:10px 20px; font-size:18px; color: #000000; background-color:#e6ffff; text-align:center; text-decoration:none; border-radius:8px;">
+                Verify Email Address
+              </a></p>
+              <p>Thank you!</p>
+              <p>Best regards</p>`,
     });
 
     res
       .status(201)
       .send({ user: { email: user.email, subscription: user.subscription, avatarURL: user.avatarURL } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function verifyEmail(req, res, next) {
+  const { verificationToken } = req.params;
+
+  try {
+    const user = await User.findOne({ verificationToken: verificationToken });
+
+    if (user === null) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    await User.findOneAndUpdate(
+      { verificationToken: verificationToken },
+      { verify: true, verificationToken: null }
+    );
+
+    res.status(200).send({ message: "Verification successful" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function verify(req, res, next) {
+  const { email } = req.body;
+
+  const { error } = verifySchema.validate(req.body);
+  if (typeof error !== "undefined") {
+    return res.status(400).send({ message: error.message });
+  }
+
+  if (!email) {
+    return res.status(400).json({ message: "missing required field email" });
+  }
+
+  try {
+    const user = await User.findOne({ email: email });
+    const verifyToken = user.verificationToken;
+
+    if (user.verify) {
+      return res
+        .status(400)
+        .json({ message: "Verification has already been passed" });
+    }
+
+      res.status(200).send({ message: "Verification email sent" });
   } catch (error) {
     next(error);
   }
@@ -63,6 +131,10 @@ async function loginUser(req, res, next) {
 
     if (isMatch === false) {
       return res.status(401).send({ message: "Email or password is wrong" });
+    }
+
+    if (user.verify === false) {
+      return res.status(401).send({ message: "Confirm your email" });
     }
 
     const token = jwt.sign(
@@ -130,6 +202,8 @@ async function usersAvatar(req, res, next) {
 
 export default {
   registerUser,
+  verifyEmail,
+  verify,
   loginUser,
   logout,
   currentUser,
