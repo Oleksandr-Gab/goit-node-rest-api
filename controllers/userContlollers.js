@@ -114,7 +114,7 @@ async function usersAvatar(req, res, next) {
 
     const user = await User.findOneAndUpdate(
       req.user._id,
-      { avatarURL: `/avatars/ ${req.file.filename}` },
+      { avatarURL: `/avatars/${req.file.filename}` },
       { new: true }
     );
 
